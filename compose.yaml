@@ -1,0 +1,58 @@
+services:
+  worker:
+    build:
+      context: ${PHP_DIR_ABS}
+      target: worker
+    depends_on:
+      php:
+        condition: service_healthy
+        restart: true
+    volumes:
+      - ${PHP_DIR}supervisor/:/etc/supervisor/:rw
+      - ${XO_ROOT_DIR}/${XO_PHP_ROOT}:/var/www/html/:rw
+    env_file:
+      - ${XO_ROOT_DIR}/.env
+      - ${XO_ROOT_DIR}/.env.local
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "supervisorctl", "-c", "/etc/supervisor/supervisord.conf", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  php:
+    user: ${USER_UID}:${USER_GID}
+    build:
+      context: ${PHP_DIR_ABS}
+      target: dev
+    depends_on:
+      localstack:
+        condition: service_healthy
+        restart: true
+      postgres:
+        condition: service_healthy
+        restart: true
+    ports:
+      - "80:80"
+    volumes:
+      - ${XO_ROOT_DIR}/${XO_PHP_ROOT}:/var/www/html/:rw
+    env_file:
+      - ${XO_ROOT_DIR}/.env
+      - ${XO_ROOT_DIR}/.env.local
+
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    tty: true
+    healthcheck:
+      test: ["CMD", "curl", "-k", "-f", "http://localhost/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+networks:
+  default:
+    external: true
+    name: ${XO_PROJECT_NAME}
