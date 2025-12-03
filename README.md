@@ -1,61 +1,53 @@
-# PHP Docker — Make Targets
+# PHP Bundle
 
-This directory contains Make targets to work with the PHP/Symfony application inside the `php` Docker service defined in `compose.yaml`.
+This bundle contains everything needed to run the Symfony API inside Docker: the `php` FPM/Nginx service, a `worker` process, and a rich set of Make targets. It **must be consumed through** `docker/core`, which adds the bundle to the global `Makefile` surface and wires its compose file into the shared network.
 
-Run targets from the repository context where `DOCKER_COMPOSE` is defined (typically the project root), or from this folder if your environment already exports it.
+## Core Principles
 
-## Usage
+- **Single entrypoint** – All commands (`make php.bash`, `make php.migrate`, etc.) are executed from the project root via the core `Makefile`.
+- **Reproducible** – Targets scaffold environment variables, compose services, migrations, fixtures, and JWT keys so a new checkout boots with `make install && make init`.
+- **Safe defaults** – The services are development-focused (mounted source tree, host networking, verbose logging). Do not deploy them outside of local environments.
 
-- List PHP-related help: `make php.help`
-- Run a target: `make <target>` (for example, `make php.bash`)
-- Pass a Symfony command: `make php.cmd cmd='about'`
+## Installation & Daily Flow
 
-## Targets
+```bash
+make php.install   # ensure env vars and helper files exist
+make php.init      # same as `make init`: composer install, migrations, fixtures, cache clear
+make start         # bring up php + worker along with other enabled bundles
+```
 
-Runtime / Container
-- `php.docker.build` — Build the PHP container image (no cache).
-- `php.logs` — Follow logs of the `php` service container.
-- `php.bash` — Open an interactive Bash shell in the container.
-- `php.restart` — Run DB migrations and fixtures, then restart the `php` service.
-- `restart` — Alias for `php.restart`.
-- `help` — Alias for `php.help`.
+When you need ad-hoc CLI access run `make php.bash`. To run Symfony console commands without opening a shell use `make php.cmd cmd='cache:clear'`.
+
+## Key Targets
+
+Runtime
+- `php.bash`, `worker.bash` – Get an interactive shell inside the respective container.
+- `php.logs`, `worker.logs` – Follow container logs.
+- `php.docker.build`, `worker.docker.build` – Build images from the bundle’s Dockerfile.
+- `php.restart`, `worker.restart` – Restart services (the PHP restart target runs migrations+fixtures first).
 
 Application Lifecycle
-- `php.install` — Project setup; adds required config (e.g., copies `.env` if missing).
-- `install` — Alias for `php.install`.
-- `init` — Dev init: composer install (dev), run migrations, load fixtures, generate JWT keys, clear cache.
-- `php.assets` — Install Symfony assets.
-- `php.cmd` — Run a Symfony console command, e.g. `make php.cmd cmd='cache:clear'`.
-- `php.cc` — Clear the Symfony cache.
-- `php.jwt_keys` — Generate JWT key pair (skips if it already exists).
+- `php.install` – Append bundle-specific values to `.env` and configure gitignore snippets (invoked by `make install`).
+- `php.init` – Composer install (dev), migrate, load fixtures, clear cache, generate JWT keys.
+- `php.assets`, `php.cmd`, `php.exec`, `php.cc`, `php.jwt_keys`.
 
 Database
-- `php.db` — Update Doctrine schema in place (`doctrine:schema:update --force`).
-- `php.migrate` — Apply all Doctrine migrations (non-interactive).
-- `php.migration` — Create a new Doctrine migration class.
-- `php.fixtures` — Load all fixtures, purging data with truncate (destructive).
-- `php.validate_db` — Validate that the Doctrine mapping matches the database schema.
+- `php.migrate`, `php.migration`, `php.fixtures`, `php.db`, `php.validate_db`.
 
-Composer
-- `php.composer.dev` — Install Composer deps with dev packages.
-- `php.composer.prod` — Install Composer deps optimized for production (no dev/plugins/scripts, optimized autoloader).
+Composer & Quality
+- `php.composer.dev`, `php.composer.prod`.
+- `php.cs-fixer`, `php.lint`, `php.stan`, `php.test`, `php.verify` (full suite), `fix`, `lint`, `ci`.
 
-Quality / CI
-- `php.lint` — Lint PHP (`phplint`), container, YAML, and Twig files.
-- `php.stan` — Static analysis with PHPStan.
-- `php.cs-fixer` — Apply code style fixes with PHP-CS-Fixer.
-- `fix` — Run `php.cs-fixer` and `php.stan`.
-- `lint` — Run `php.lint` and `php.validate_db`.
-- `ci` — Run formatter, static analysis, linters, DB validation, and tests.
+## Notes & Warnings
 
-Tests
-- `php.test` — Run PHPUnit test suite inside the container.
-- `test` — Alias for `php.test`.
+- `php.fixtures` truncates the database before loading fixtures; do not run it against persistent data you care about.
+- `php.db` changes the schema directly; prefer migrations for anything beyond quick prototypes.
+- The bundle expects `XO_ROOT_DIR`, `XO_PHP_ROOT`, and `DOCKER_COMPOSE` to be exported by the core. If the targets are missing, make sure your root `Makefile` is linked to `docker/core/main_file`.
 
-## Notes
+## License
 
-- Some targets modify code or data:
-  - `php.fixtures` truncates tables before loading fixtures (destructive).
-  - `php.db` changes the schema directly; prefer migrations for production.
-  - `php.cs-fixer` rewrites files to apply code style fixes.
-- Environment variables like `XO_ROOT_DIR`, `XO_PHP_ROOT`, and the `DOCKER_COMPOSE` command are expected to be provided by the parent Makefile or your shell environment.
+This make bundle is provided under the MIT License. See the [LICENSE](./LICENSE) file for details.
+
+Part of the [make-core](https://github.com/xebro-gmbh/make-core) system.
+
+Copyright (c) 2025 xebro GmbH
