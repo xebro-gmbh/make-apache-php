@@ -37,9 +37,9 @@ RUN cp $PHP_INI_DIR/php.ini-production $PHP_INI_DIR/php.ini
 
 
 RUN cp $PHP_INI_DIR/php.ini-production $PHP_INI_DIR/php.ini
-ADD ./etc/php.ini "$PHP_INI_DIR/conf.d/xxx-prod-php.ini"
-ADD ./etc/000-default.conf /etc/apache2/sites-enabled/000-default.conf
-ADD ./etc/apache2.conf /etc/apache2/apache2.conf
+ADD ./config/php.ini "$PHP_INI_DIR/conf.d/xxx-prod-php.ini"
+ADD ./config/000-default.conf /etc/apache2/sites-enabled/000-default.conf
+ADD ./config/apache2.conf /etc/apache2/apache2.conf
 
 # Set timezone to Berlin
 RUN ln -fs /usr/share/zoneinfo/$TZ /etc/localtime \
@@ -70,11 +70,11 @@ RUN install-php-extensions xdebug
 RUN mkdir -p ${COMPOSER_HOME} ; \
     mkdir -p ${COMPOSER_CACHE_DIR}
 
-ADD ./etc/install_composer.sh /var/scripts/
+ADD ./config/install_composer.sh /var/scripts/
 RUN chmod +x /var/scripts/install_composer.sh ; /var/scripts/install_composer.sh
 RUN chmod -R 0777 ${COMPOSER_HOME}
 
 RUN cp $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini
-ADD ./etc/php-dev.ini "$PHP_INI_DIR/conf.d/xxx-dev-php.ini"
+ADD ./config/php-dev.ini "$PHP_INI_DIR/conf.d/xxx-dev-php.ini"
 
 FROM dev AS ci

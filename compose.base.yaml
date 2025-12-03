@@ -27,13 +27,6 @@ services:
     build:
       context: ${PHP_DIR_ABS}
       target: dev
-    depends_on:
-      localstack:
-        condition: service_healthy
-        restart: true
-      postgres:
-        condition: service_healthy
-        restart: true
     ports:
       - "80:80"
     volumes:

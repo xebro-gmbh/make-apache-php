@@ -1,0 +1,6 @@
+services:
+  php:
+    depends_on:
+      postgres:
+        condition: service_healthy
+        restart: true

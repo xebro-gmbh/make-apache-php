@@ -88,7 +88,7 @@ php.cs-check: ## Cody style validation
 
 php.install:
 	$(call headline,"Installing php")
-	$(call ensure_env_vars,".env","${PHP_DIR}.env")
+	$(call ensure_env_vars,".env","${PHP_DIR}config/.env")
 
 worker.docker.build: ## Build php container
 	@${DOCKER_COMPOSE} build worker --no-cache
