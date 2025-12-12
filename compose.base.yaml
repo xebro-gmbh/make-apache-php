@@ -8,7 +8,7 @@ services:
         condition: service_healthy
         restart: true
     volumes:
-      - ${PHP_DIR}supervisor/:/etc/supervisor/:rw
+      - ${PHP_DIR_ABS}/supervisor/:/etc/supervisor/:ro
       - ${XO_ROOT_DIR}/${XO_PHP_ROOT}:/var/www/html/:rw
     env_file:
       - ${XO_ROOT_DIR}/.env
