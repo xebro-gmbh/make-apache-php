@@ -10,6 +10,8 @@ services:
     volumes:
       - ${PHP_DIR_ABS}/supervisor/:/etc/supervisor/:ro
       - ${XO_ROOT_DIR}/${XO_PHP_ROOT}:/var/www/html/:rw
+      - ${XO_CONFIG_DIR}/composer_tmp:/composer/:rw
+
     env_file:
       - ${XO_ROOT_DIR}/.env
       - ${XO_ROOT_DIR}/.env.local
@@ -34,6 +36,7 @@ services:
     env_file:
       - ${XO_ROOT_DIR}/.env
       - ${XO_ROOT_DIR}/.env.local
+      - ${XO_CONFIG_DIR}/composer_tmp:/composer/:rw
 
     extra_hosts:
       - "host.docker.internal:host-gateway"
