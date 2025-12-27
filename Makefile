@@ -1,10 +1,9 @@
 #--------------------------
-# xebro GmbH - PHP - 1.0.2
+# xebro GmbH - PHP - 1.1.0
 #--------------------------
 
 .PHONY:
 DOCKER_PHP=${DOCKER_COMPOSE} run --rm php
-DOCKER_RUN_WORKER=${DOCKER_COMPOSE} run --rm worker
 SYMFONY_CONSOLE=${DOCKER_PHP} ./bin/console
 
 PHP_DIR := $(patsubst $(XO_ROOT_DIR)/%,./%,$(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
@@ -18,14 +17,8 @@ php.help:
 php.logs: ## Show docker logs
 	@${DOCKER_COMPOSE} logs -f php
 
-worker.logs: ## Show docker logs
-	@${DOCKER_COMPOSE} logs -f worker
-
 php.bash: ## Open bash inside the container
 	@${DOCKER_PHP} bash
-
-worker.bash: ## Open bash inside the container
-	@${DOCKER_RUN_WORKER} bash
 
 php.cc: ## Clear the symfony cache
 	$(call target_name,$@)
@@ -92,20 +85,12 @@ php.install:
 	$(call ensure_lines,.gitignore,${PHP_DIR}config/.gitignore)
 	@mkdir -p ${XO_CONFIG_DIR}/composer_tmp
 
-worker.docker.build: ## Build php container
-	@${DOCKER_COMPOSE} build worker --no-cache
-
 php.docker.build: ## Build php container
 	@${DOCKER_COMPOSE} build php --no-cache
 
 php.restart: php.migrate php.fixtures ## Restart PHP
 	$(call target_name,$@)
 	@${DOCKER_COMPOSE} restart php --no-deps
-	@${DOCKER_COMPOSE} restart worker --no-deps
-
-worker.restart:
-	$(call target_name,$@)
-	@${DOCKER_COMPOSE} restart worker --no-deps
 
 php.exec:
 	${DOCKER_PHP} bash -c $${cmd}
