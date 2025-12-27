@@ -48,18 +48,6 @@ RUN ln -fs /usr/share/zoneinfo/$TZ /etc/localtime \
 WORKDIR /var/www/html
 
 
-FROM base AS worker
-
-RUN DEBIAN_FRONTEND=noninteractive \
-    apt-get update -q \
-    && apt-get install -qq -y  supervisor
-
-ADD ./supervisor/supervisord.conf /etc/supervisor/supervisord.conf
-ADD ./supervisor/program.d/ /etc/supervisor/program.d/
-
-CMD supervisord -n -c /etc/supervisor/supervisord.conf
-
-
 FROM base AS dev
 
 ENV COMPOSER_HOME /composer_data

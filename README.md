@@ -1,6 +1,6 @@
 # PHP Bundle
 
-This bundle contains everything needed to run the Symfony API inside Docker: the `php` FPM/Nginx service, a `worker` process, and a rich set of Make targets. It **must be consumed through** `docker/core`, which adds the bundle to the global `Makefile` surface and wires its compose file into the shared network.
+This bundle contains everything needed to run the Symfony API inside Docker: the `php` FPM/Nginx service and a rich set of Make targets. It **must be consumed through** `docker/core`, which adds the bundle to the global `Makefile` surface and wires its compose file into the shared network.
 
 ## Core Principles
 
@@ -13,7 +13,7 @@ This bundle contains everything needed to run the Symfony API inside Docker: the
 ```bash
 make php.install   # ensure env vars and helper files exist
 make php.init      # same as `make init`: composer install, migrations, fixtures, cache clear
-make start         # bring up php + worker along with other enabled bundles
+make start         # bring up php along with other enabled bundles
 ```
 
 When you need ad-hoc CLI access run `make php.bash`. To run Symfony console commands without opening a shell use `make php.cmd cmd='cache:clear'`.
@@ -21,10 +21,10 @@ When you need ad-hoc CLI access run `make php.bash`. To run Symfony console comm
 ## Key Targets
 
 Runtime
-- `php.bash`, `worker.bash` – Get an interactive shell inside the respective container.
-- `php.logs`, `worker.logs` – Follow container logs.
-- `php.docker.build`, `worker.docker.build` – Build images from the bundle’s Dockerfile.
-- `php.restart`, `worker.restart` – Restart services (the PHP restart target runs migrations+fixtures first).
+- `php.bash` – Get an interactive shell inside the container.
+- `php.logs` – Follow container logs.
+- `php.docker.build` – Build the image from the bundle’s Dockerfile.
+- `php.restart` – Restart the service (runs migrations+fixtures first).
 
 Application Lifecycle
 - `php.install` – Append bundle-specific values to `.env` and configure gitignore snippets (invoked by `make install`).
