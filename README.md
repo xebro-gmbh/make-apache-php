@@ -50,4 +50,4 @@ This make bundle is provided under the MIT License. See the [LICENSE](./LICENSE)
 
 Part of the [make-core](https://github.com/xebro-gmbh/make-core) system.
 
-Copyright (c) 2025 xebro GmbH
+Copyright (c) 2026 xebro GmbH

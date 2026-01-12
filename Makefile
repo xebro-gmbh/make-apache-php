@@ -1,5 +1,5 @@
 #--------------------------
-# xebro GmbH - PHP - 1.1.1
+# xebro GmbH - PHP - 1.1.2
 #--------------------------
 
 .PHONY:
@@ -48,7 +48,13 @@ php.migration: ## Create migration
 
 php.test: ## Open bash inside the container
 	$(call target_name,$@)
-	@${DOCKER_PHP} ./bin/phpunit
+	@${DOCKER_PHP} bash -c 'if [ ! -f ./vendor/bin/phpunit ]; then echo "phpunit not found at ./vendor/bin/phpunit. Run composer install to install it."; exit 1; fi'
+	@${DOCKER_PHP} ./vendor/bin/phpunit
+
+php.coverage:
+	$(call target_name,$@)
+	@${DOCKER_PHP} bash -c 'if [ ! -f ./vendor/bin/phpunit ]; then echo "phpunit not found at ./vendor/bin/phpunit. Run composer install to install it."; exit 1; fi'
+	@${DOCKER_PHP} bash -c "XDEBUG_MODE=coverage ./vendor/bin/phpunit --coverage-html=var/coverage/"
 
 php.composer.prod:
 	@${DOCKER_PHP} composer install --no-ansi --no-dev --no-interaction --no-plugins --no-progress --no-scripts --optimize-autoloader
