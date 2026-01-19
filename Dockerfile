@@ -66,3 +66,12 @@ RUN cp $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini
 ADD ./config/php-dev.ini "$PHP_INI_DIR/conf.d/xxx-dev-php.ini"
 
 FROM dev AS ci
+
+FROM base AS worker
+
+RUN DEBIAN_FRONTEND=noninteractive \
+    apt-get update -q \
+    && apt-get install -qq -y supervisor \
+    && rm -rf /var/lib/apt/lists/*
+
+CMD ["supervisord", "-n", "-c", "/etc/supervisor/supervisord.conf"]
