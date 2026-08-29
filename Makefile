@@ -94,7 +94,7 @@ php.install:
 	@mkdir -p ${XO_CONFIG_DIR}/composer_tmp
 
 php.docker.build: ## Build php container
-	@${DOCKER_COMPOSE} build php --no-cache
+	@${DOCKER_COMPOSE} build php
 
 php.restart: php.migrate php.fixtures ## Restart PHP
 	$(call target_name,$@)
@@ -122,7 +122,7 @@ ci: php.cs-fixer php.stan php.lint php.validate_db php.test
 debug: php.debug
 fix: php.cs-fixer php.stan
 help: php.help
-init: php.install php.composer.dev php.migrate php.fixtures php.cc
+init: php.install php.docker.build php.composer.dev php.migrate php.fixtures php.cc
 install: php.install
 lint: php.lint php.validate_db
 php.verify: php.cs-fixer php.stan php.lint php.validate_db php.test ## Run CS fix, static analysis, lint, DB validate, tests

@@ -36,7 +36,6 @@ RUN install-php-extensions \
 RUN cp $PHP_INI_DIR/php.ini-production $PHP_INI_DIR/php.ini
 
 
-RUN cp $PHP_INI_DIR/php.ini-production $PHP_INI_DIR/php.ini
 ADD ./config/php.ini "$PHP_INI_DIR/conf.d/xxx-prod-php.ini"
 ADD ./config/000-default.conf /etc/apache2/sites-enabled/000-default.conf
 ADD ./config/apache2.conf /etc/apache2/apache2.conf
@@ -50,8 +49,8 @@ WORKDIR /var/www/html
 
 FROM base AS dev
 
-ENV COMPOSER_HOME /composer_data
-ENV COMPOSER_CACHE_DIR /composer
+ENV COMPOSER_HOME=/composer_data
+ENV COMPOSER_CACHE_DIR=/composer
 
 RUN install-php-extensions xdebug
 

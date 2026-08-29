@@ -1,6 +1,7 @@
 services:
   php:
     user: ${USER_UID}:${USER_GID}
+    image: ${XO_PHP_IMAGE}
     build:
       context: ${PHP_DIR_ABS}
       target: dev
