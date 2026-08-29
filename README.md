@@ -43,6 +43,7 @@ Composer & Quality
 - `php.fixtures` truncates the database before loading fixtures; do not run it against persistent data you care about.
 - `php.db` changes the schema directly; prefer migrations for anything beyond quick prototypes.
 - The bundle expects `XO_ROOT_DIR`, `XO_PHP_ROOT`, and `DOCKER_COMPOSE` to be exported by the core. If the targets are missing, make sure your root `Makefile` is linked to `docker/core/main_file`.
+- With parallel instances (see the core README) all instances on a machine share the image tag from `XO_PHP_IMAGE`: a rebuild in one instance reaches the others on their next container recreate. When changing the Dockerfile, set a private `XO_PHP_IMAGE` in your `.env.local` to keep other instances unaffected.
 
 ## License
 
