@@ -3,6 +3,8 @@
 #--------------------------
 
 .PHONY:
+XO_PHP_PORT ?= 80
+
 DOCKER_PHP=${DOCKER_COMPOSE} run --rm php
 SYMFONY_CONSOLE=${DOCKER_PHP} ./bin/console
 
